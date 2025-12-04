@@ -1,0 +1,94 @@
+const Message = require('./messages');
+
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function handleCreditFlow(client, msg, chatId, body, bodyLower, userState, userData) {
+    const currentState = userState[chatId];
+    
+    // Estados do fluxo de crédito
+    if (currentState === 'confirm_name') {
+        if (bodyLower === 'sim') {
+            // Nome confirmado - vai para sobrenome
+            userState[chatId] = 'confirm_lastname';
+            return await client.sendMessage(chatId, Message.getLastNameConfirmation(userData[chatId].lastName));
+        } else if (bodyLower === 'nao' || bodyLower === 'não') {
+            // Nome incorreto
+            userState[chatId] = 'menu';
+            return await client.sendMessage(chatId, Message.getNotFoundMessage());
+        }
+        return false;
+    }
+    
+    if (currentState === 'confirm_lastname') {
+        if (bodyLower === 'sim') {
+            // Sobrenome confirmado - vai para CPF (últimos 3 dígitos)
+            userState[chatId] = 'confirm_cpf_digits';
+            return await client.sendMessage(chatId, Message.getCpfLast3Confirmation(userData[chatId].cpfLast3));
+        } else if (bodyLower === 'nao' || bodyLower === 'não') {
+            // Sobrenome incorreto
+            userState[chatId] = 'menu';
+            return await client.sendMessage(chatId, Message.getNotFoundMessage());
+        }
+        return false;
+    }
+    
+    if (currentState === 'confirm_cpf_digits') {
+        if (bodyLower === 'sim') {
+            // Últimos 3 dígitos confirmados - vai para CPF completo
+            userState[chatId] = 'confirm_cpf_full';
+            return await client.sendMessage(chatId, Message.getCpfFullConfirmation(userData[chatId].cpfMasked));
+        } else if (bodyLower === 'nao' || bodyLower === 'não') {
+            // CPF incorreto
+            userState[chatId] = 'menu';
+            return await client.sendMessage(chatId, Message.getNotFoundMessage());
+        }
+        return false;
+    }
+    
+    if (currentState === 'confirm_cpf_full') {
+        if (bodyLower === 'sim') {
+            // CPF completo confirmado - vai para email
+            userState[chatId] = 'confirm_email';
+            return await client.sendMessage(chatId, Message.getEmailConfirmation(userData[chatId].email));
+        } else if (bodyLower === 'nao' || bodyLower === 'não') {
+            // CPF incorreto
+            userState[chatId] = 'menu';
+            return await client.sendMessage(chatId, Message.getNotFoundMessage());
+        }
+        return false;
+    }
+    
+    if (currentState === 'confirm_email') {
+        if (bodyLower === 'sim') {
+            // Email confirmado - CRÉDITO APROVADO!
+            const fullName = `${userData[chatId].name} ${userData[chatId].lastName}`.trim();
+            userState[chatId] = 'credit_approved';
+            return await client.sendMessage(chatId, Message.getCreditApproval(fullName, userData[chatId].limit));
+        } else if (bodyLower === 'nao' || bodyLower === 'não') {
+            // Email incorreto
+            userState[chatId] = 'menu';
+            return await client.sendMessage(chatId, Message.getNotFoundMessage());
+        }
+        return false;
+    }
+    
+    if (currentState === 'credit_approved') {
+        if (body === '1') {
+            // Falar com atendente
+            userState[chatId] = 'attendent';
+            return await client.sendMessage(chatId, Message.getMessage('2'));
+        } else if (body === '2') {
+            // Encerrar atendimento
+            userState[chatId] = null;
+            delete userData[chatId];
+            return await client.sendMessage(chatId, Message.getClosingMessage());
+        }
+        return false;
+    }
+    
+    return false;
+}
+
+module.exports = { handleCreditFlow };
