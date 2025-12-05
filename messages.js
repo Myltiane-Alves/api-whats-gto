@@ -167,6 +167,13 @@ class Messages {
                '❌ Digite *NAO* se estiver incorreto';
     }
 
+    getFullNameRequest() {
+        return '👤 *Confirmação de Nome Completo*\n\n' +
+           'Por favor, digite seu nome completo para validação.\n\n' +
+           'Exemplo: Vitorino Silva Nascimento \n\n' +
+           '💡 Digite eu nome completo.';
+    }
+
     getLastNameConfirmation(lastName) {
         return '👤 *Confirmação de Sobrenome*\n\n' +
                'Seu sobrenome é *' + lastName + '*?\n\n' +
@@ -180,13 +187,6 @@ class Messages {
                '✅ Digite *SIM* para confirmar\n' +
                '❌ Digite *NAO* se estiver incorreto';
     }
-
-    // getCpfFullConfirmation(cpfMasked) {
-    //     return '🔐 *Confirmação de CPF Completo*\n\n' +
-    //            'Seu CPF é: *' + cpfMasked + '*?\n\n' +
-    //            '✅ Digite *SIM* para confirmar\n' +
-    //            '❌ Digite *NAO* se estiver incorreto';
-    // }
 
     getCpfRequest() {
         return '🔐 *Confirmação de CPF*\n\n' +

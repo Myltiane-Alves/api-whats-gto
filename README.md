@@ -48,6 +48,8 @@ Melhorias a serem feitas
 
 1.quando for confirmar o cpf em vez dele  responder sim ou nao
   ele precisa digitar o cpf
+  quando for confirmar o sobre nome em vez dele  responder sim ou nao
+  ele precisa digitar o nome completo
 
 2.cadastros de usuário 
   1.telefone

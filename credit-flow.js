@@ -8,11 +8,28 @@ async function handleCreditFlow(client, msg, chatId, body, bodyLower, userState,
     const currentState = userState[chatId];
     
     // Estados do fluxo de crédito
+    // if (currentState === 'confirm_name') {
+    //     if (bodyLower === 'sim') {
+    //         // Nome confirmado - vai para sobrenome
+    //         userState[chatId] = 'confirm_lastname';
+    //         return await client.sendMessage(chatId, Message.getLastNameConfirmation(userData[chatId].lastName));
+    //     } else if (bodyLower === 'nao' || bodyLower === 'não') {
+    //         // Nome incorreto
+    //         userState[chatId] = 'menu';
+    //         return await client.sendMessage(chatId, Message.getNotFoundMessage());
+    //     }
+    //     return false;
+    // }
+    
     if (currentState === 'confirm_name') {
         if (bodyLower === 'sim') {
             // Nome confirmado - vai para sobrenome
-            userState[chatId] = 'confirm_lastname';
-            return await client.sendMessage(chatId, Message.getLastNameConfirmation(userData[chatId].lastName));
+            userState[chatId] = 'input_fullname';
+
+            if(!userData[chatId].nameAttempts) {
+                userData[chatId].nameAttempts = 3;
+            }
+            return await client.sendMessage(chatId, Message.getFullNameRequest());
         } else if (bodyLower === 'nao' || bodyLower === 'não') {
             // Nome incorreto
             userState[chatId] = 'menu';
