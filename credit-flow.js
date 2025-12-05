@@ -38,17 +38,39 @@ async function handleCreditFlow(client, msg, chatId, body, bodyLower, userState,
         return false;
     }
     
-    if (currentState === 'confirm_lastname') {
-        if (bodyLower === 'sim') {
-            // Sobrenome confirmado - vai para CPF (últimos 3 dígitos)
+    if (currentState === 'input_fullname') {
+        // Normaliza o texto digitado e o cadastrado
+        const nomeDigitado = body.trim().toLowerCase();
+        const nomeCompleto = `${userData[chatId].name} ${userData[chatId].lastName}`.trim().toLowerCase();
+        
+        // Comparação flexível (remove acentos e espaços extras)
+        const normalizar = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
+        
+        if (normalizar(nomeDigitado) === normalizar(nomeCompleto)) {
+            // NOME COMPLETO CORRETO - vai para CPF
+            console.log('✅ Nome completo validado com sucesso!');
             userState[chatId] = 'confirm_cpf_digits';
             return await client.sendMessage(chatId, Message.getCpfLast3Confirmation(userData[chatId].cpfLast3));
-        } else if (bodyLower === 'nao' || bodyLower === 'não') {
-            // Sobrenome incorreto
-            userState[chatId] = 'menu';
-            return await client.sendMessage(chatId, Message.getNotFoundMessage());
+        } else {
+            // NOME INCORRETO - decrementa tentativas
+            userData[chatId].nameAttempts--;
+            
+            if (userData[chatId].nameAttempts > 0) {
+                return await client.sendMessage(chatId, 
+                    `❌ *Nome não confere*\n\n` +
+                    `Você ainda tem *${userData[chatId].nameAttempts} tentativa(s)*.\n\n` +
+                    `Por favor, digite seu nome completo novamente:`);
+            } else {
+                // Sem mais tentativas
+                console.log('❌ Tentativas de nome esgotadas');
+                userState[chatId] = 'menu';
+                delete userData[chatId];
+                return await client.sendMessage(chatId, 
+                    '❌ *Número de tentativas excedido*\n\n' +
+                    'Por favor, entre em contato com um atendente.\n\n' +
+                    'Digite *2* para falar com um atendente.');
+            }
         }
-        return false;
     }
     
     if (currentState === 'confirm_cpf_digits') {
