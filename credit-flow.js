@@ -37,8 +37,12 @@ async function handleCreditFlow(client, msg, chatId, body, bodyLower, userState,
     if (currentState === 'confirm_cpf_digits') {
         if (bodyLower === 'sim') {
             // Últimos 3 dígitos confirmados - vai para CPF completo
-            userState[chatId] = 'confirm_cpf_full';
-            return await client.sendMessage(chatId, Message.getCpfFullConfirmation(userData[chatId].cpfMasked));
+            userState[chatId] = 'input_cpf';
+
+            if(!userData[chatId].cpfAttempts) {
+                userData[chatId].cpfAttempts = 3;
+            }
+            return await client.sendMessage(chatId, Message.getCpfRequest());
         } else if (bodyLower === 'nao' || bodyLower === 'não') {
             // CPF incorreto
             userState[chatId] = 'menu';
@@ -47,17 +51,35 @@ async function handleCreditFlow(client, msg, chatId, body, bodyLower, userState,
         return false;
     }
     
-    if (currentState === 'confirm_cpf_full') {
-        if (bodyLower === 'sim') {
+    if (currentState === 'input_cpf') {
+        const cpfDigitado = body.replace(/[^0-9]/g, '');
+        const cpfCadastrado = userData[chatId].cpf.replace(/[^0-9]/g, '');
+        if (cpfDigitado === cpfCadastrado) {
             // CPF completo confirmado - vai para email
             userState[chatId] = 'confirm_email';
             return await client.sendMessage(chatId, Message.getEmailConfirmation(userData[chatId].email));
-        } else if (bodyLower === 'nao' || bodyLower === 'não') {
+        } else {
             // CPF incorreto
-            userState[chatId] = 'menu';
-            return await client.sendMessage(chatId, Message.getNotFoundMessage());
+            userData[chatId].cpfAttempts--;
+           
+            if(userData[chatId].cpfAttempts > 0) {
+                return await client.sendMessage(chatId, 
+                    `❌ *CPF incorreto*\n\n` +
+                    `Você ainda tem *${userData[chatId].cpfAttempts} tentativa(s)*.\n\n` +
+                    `Por favor, digite seu CPF novamente:`
+                );
+            } else {
+                console.log('❌ Tentativas de CPF esgotadas');
+                userState[chatId] = 'menu';
+                delete userData[chatId];
+                return await client.sendMessage(chatId,
+                    '❌ *Número máximo de tentativas de CPF atingido*\n\n' +
+                    'Por favor, entre em contato com um atendente.\n\n' +
+                    'Digite *2* para falar com um atendente.'
+                )
+            }
         }
-        return false;
+        
     }
     
     if (currentState === 'confirm_email') {

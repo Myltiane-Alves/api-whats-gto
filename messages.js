@@ -181,11 +181,18 @@ class Messages {
                '❌ Digite *NAO* se estiver incorreto';
     }
 
-    getCpfFullConfirmation(cpfMasked) {
-        return '🔐 *Confirmação de CPF Completo*\n\n' +
-               'Seu CPF é: *' + cpfMasked + '*?\n\n' +
-               '✅ Digite *SIM* para confirmar\n' +
-               '❌ Digite *NAO* se estiver incorreto';
+    // getCpfFullConfirmation(cpfMasked) {
+    //     return '🔐 *Confirmação de CPF Completo*\n\n' +
+    //            'Seu CPF é: *' + cpfMasked + '*?\n\n' +
+    //            '✅ Digite *SIM* para confirmar\n' +
+    //            '❌ Digite *NAO* se estiver incorreto';
+    // }
+
+    getCpfRequest() {
+        return '🔐 *Confirmação de CPF*\n\n' +
+            'Por favor, digite seu CPF completo para validação.\n\n' +
+            'Formato aceito: 000.000.000-00 ou somente números\n\n' +
+            'Exemplo: 062.127.070-90';
     }
 
     getEmailConfirmation(email) {

@@ -42,3 +42,22 @@ Este é um bot para WhatsApp criado com [whatsapp-web.js](https://github.com/Myl
 ```bash
 npm install
 node main.js
+
+
+Melhorias a serem feitas
+
+1.quando for confirmar o cpf em vez dele  responder sim ou nao
+  ele precisa digitar o cpf
+
+2.cadastros de usuário 
+  1.telefone
+  2.cpf
+  3.email
+  4.endereço
+  5.nome completo
+
+3.confirmação de cadastro e exibir o usuário as informações enviadas
+
+4.salvar os dados do usuário em arquivo temporário em um csv do google docs 
+
+5.melhoria de arquitetura de código estrutura de pastas
