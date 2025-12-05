@@ -238,4 +238,4 @@ class Messages {
     }
 }
 
-module.exports = new Messages();
+export default new Messages();

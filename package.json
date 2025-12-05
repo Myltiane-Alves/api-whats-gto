@@ -2,9 +2,10 @@
   "name": "whatsapp-bot-n8n",
   "version": "1.0.0",
   "main": "main-n8n.js",
+  "type": "module",
   "scripts": {
-    "start": "node main-n8n.js",
-    "start:n8n": "node main-n8n.js",
+    "start": "node src/main-n8n.js",
+    "start:n8n": "node src/main-n8n.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

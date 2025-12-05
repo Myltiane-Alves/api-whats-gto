@@ -1,4 +1,4 @@
-const Message = require('./messages');
+import Message from './messages.js'
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -152,4 +152,4 @@ async function handleCreditFlow(client, msg, chatId, body, bodyLower, userState,
     return false;
 }
 
-module.exports = { handleCreditFlow };
+export { handleCreditFlow };

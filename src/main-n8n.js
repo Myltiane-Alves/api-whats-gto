@@ -1,11 +1,12 @@
-const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
-const express = require('express');
-const Message = require('./messages');
-const { handleCreditFlow } = require('./credit-flow');
-const axios = require('axios');
-const path = require('path');
-const fs = require('fs');
+import pkg from 'whatsapp-web.js';
+const { Client, LocalAuth, MessageMedia } = pkg;
+import qrcode from 'qrcode-terminal';
+import express from 'express';
+import Message from './messages.js';
+import { handleCreditFlow } from './credit-flow.js';
+import axios from 'axios';
+import path from 'path';
+import fs from 'fs';
 const app = express();
 app.use(express.json());
 
