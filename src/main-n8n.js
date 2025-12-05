@@ -68,7 +68,7 @@ client.on('message', async (msg) => {
             return client.sendMessage(chatId, Message.getMessage(10));
         }
         
-        // Quando estiver com atendente, envia para n8n
+        
         try {
             const webhookData = {
                 from: chatId,
